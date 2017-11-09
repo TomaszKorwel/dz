@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package net.sf.dz3.view.http.v3;
+
+option java_package = "net.sf.dz3.view.http.v3";
+option java_outer_classname = "ZoneCommandList";
+
+/**
+ * This message is being read from the server.
+ */
+
+message commands {
+
+	repeated ZoneCommand command = 1;
+}
+
+message ZoneCommand {
+
+    required string name = 1;
+    required double setpointTemperature = 2;
+    required bool enabled = 3;
+    required bool onHold = 4;
+    required bool voting = 5;
+}
