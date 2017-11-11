@@ -4,6 +4,7 @@ package net.sf.dz3.view.http.v3;
 
 option java_package = "net.sf.dz3.view.http.v3";
 option java_outer_classname = "ZoneCommandList";
+option optimize_for = LITE_RUNTIME;
 
 /**
  * This message is being read from the server.
