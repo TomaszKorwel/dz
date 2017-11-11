@@ -1,4 +1,4 @@
-syntax = "proto2";
+syntax = "proto3";
 
 package net.sf.dz3.view.http.v3;
 
@@ -17,34 +17,34 @@ message samples {
 
 message ZoneSnapshot {
 
-    required int64 timestamp = 1;
-    required string name = 2;
-    required HvacMode mode = 3;
-    required ZoneState state = 4;
-    required double signal = 5;
-    required double currentTemperature = 6;
-    required double setpointTemperature = 7;
-    required bool enabled = 8;
-    required bool onHold = 9;
-    required bool voting = 10;
-    optional string periodName = 11;
-    required double deviationSetpoint = 12;
-    required bool deviationEnabled = 13;
-    required bool deviationVoting = 14;
-    optional string error = 15;
+    int64 timestamp = 1;
+    string name = 2;
+    HvacMode mode = 3;
+    ZoneState state = 4;
+    double signal = 5;
+    double currentTemperature = 6;
+    double setpointTemperature = 7;
+    bool enabled = 8;
+    bool onHold = 9;
+    bool voting = 10;
+    string periodName = 11;
+    double deviationSetpoint = 12;
+    bool deviationEnabled = 13;
+    bool deviationVoting = 14;
+    string error = 15;
 }
 
 enum HvacMode {
 
-	COOLING = -1;
 	HVAC_OFF = 0;
+	COOLING = -1;
 	HEATING = 1;
 }
 
 enum ZoneState {
 
-    ERROR = -1;
     ZONE_OFF = 0;
+    ERROR = -1;
     CALLING = 1;
     HAPPY = 2;
 }

@@ -54,19 +54,8 @@ public class ProtobufRendererTest {
             
             String actual = head.toString().replaceAll("\n", " ");
             String expected =
-                    "timestamp: " + timestamp + " "
-                  + "name: \"test-thermostat\" "
-                  + "mode: COOLING "
-                  + "state: CALLING "
-                  + "signal: 0.0 "
-                  + "currentTemperature: 0.0 "
-                  + "setpointTemperature: 20.0 "
-                  + "enabled: true "
-                  + "onHold: true "
-                  + "voting: true "
-                  + "deviationSetpoint: 0.0 "
-                  + "deviationEnabled: false "
-                  + "deviationVoting: false ";
+                    "# " + head.getClass().getName() + "@" + Integer.toHexString(head.hashCode()) +
+                    " enabled: true mode: COOLING mode_value: -1 name: \"test-thermostat\" on_hold: true setpoint_temperature: 20.0 state: CALLING state_value: 1 timestamp: " + timestamp + " voting: true";
 
             logger.debug("queue head (" + head.toByteString().size() + " bytes): " + actual);
             

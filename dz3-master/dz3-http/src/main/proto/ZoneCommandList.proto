@@ -1,4 +1,4 @@
-syntax = "proto2";
+syntax = "proto3";
 
 package net.sf.dz3.view.http.v3;
 
@@ -17,9 +17,9 @@ message commands {
 
 message ZoneCommand {
 
-    required string name = 1;
-    required double setpointTemperature = 2;
-    required bool enabled = 3;
-    required bool onHold = 4;
-    required bool voting = 5;
+    string name = 1;
+    double setpointTemperature = 2;
+    bool enabled = 3;
+    bool onHold = 4;
+    bool voting = 5;
 }
