@@ -36,17 +36,35 @@ public class ProtobufRendererTest {
             context.put(QueueFeeder.QUEUE_KEY, queue);
 
             ThermostatRenderer tr = new ThermostatRenderer(t, context, null);
-
-            DataSample<Double> demand = new DataSample<Double>("source-d", "signature-d", new Double(0), null);
+            
+            long timestamp = System.currentTimeMillis();
+            DataSample<Double> demand = new DataSample<Double>(timestamp, "source-d", "signature-d", new Double(0), null);
             ThermostatSignal ts = new ThermostatSignal(true, true, true, true, demand);
 
-            tr.consume(new DataSample<ThermostatSignal>("source-ts", "signature-ts", ts, null));
+            tr.consume(new DataSample<ThermostatSignal>(timestamp, "source-ts", "signature-ts", ts, null));
 
             assertEquals("wrong queue size", 1, queue.size());
+            
+            String expected =
+                      "timestamp: " + timestamp + " "
+                    + "name: \"protobuf-thermostat\" "
+                    + "mode: COOLING "
+                    + "state: CALLING "
+                    + "signal: 0.0 "
+                    + "currentTemperature: 0.0 "
+                    + "setpointTemperature: 20.0 "
+                    + "enabled: true "
+                    + "onHold: true "
+                    + "voting: true "
+                    + "deviationSetpoint: 0.0 "
+                    + "deviationEnabled: false "
+                    + "deviationVoting: false ";
+            
+            String actual = queue.peek().toString().replaceAll("\n", " ");
 
-            logger.debug("queue head: " + queue.peek());
-
-            assertEquals("wrong toString()", "protobuf-thermostat: Cooling, CALLING, signal=0.0, current=0.0, setpoint=20.0, on hold", queue.peek().toString());
+            logger.debug("queue head: " + actual);
+            
+            assertEquals("wrong toString()", expected, actual);
 
         } finally {
             NDC.pop();
