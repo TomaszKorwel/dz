@@ -23,6 +23,7 @@ import net.sf.jukebox.jmx.JmxDescriptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -146,6 +147,8 @@ public class HttpConnector extends Connector<RestRenderer> {
 
                     payload.add(new BasicNameValuePair(name, value));
                 }
+
+                post.setEntity(new UrlEncodedFormEntity(payload));
 
                 try {
 

@@ -15,6 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -193,6 +194,7 @@ public class HttpConnector extends Connector<ProtobufRenderer>{
                 List<NameValuePair> payload = new ArrayList<NameValuePair>();
 
                 payload.add(new BasicNameValuePair("snapshot", encoded));
+                post.setEntity(new UrlEncodedFormEntity(payload));
 
                 try {
 
