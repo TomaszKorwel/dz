@@ -2,7 +2,9 @@ package net.sf.dz3.view.http.v1;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -18,7 +20,12 @@ import net.sf.dz3.view.http.common.ImmediateExchanger;
 import net.sf.dz3.view.http.common.QueueFeeder;
 import net.sf.jukebox.jmx.JmxDescriptor;
 
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.NDC;
 
 /**
@@ -32,7 +39,7 @@ import org.apache.log4j.NDC;
  * {@code init-method="start"} attribute must be used in Spring bean definition, otherwise
  * the connector will not work.
  * 
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2011
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2017
  */
 public class HttpConnector extends Connector<RestRenderer> {
     
@@ -124,34 +131,36 @@ public class HttpConnector extends Connector<RestRenderer> {
             try {
 
                 logger.debug("Sending " + dataBlock);
-                
+
                 URL targetUrl = new URL(serverContextRoot, dataBlock.path);
-                
+
                 logger.debug("URL: " + targetUrl);
-                
-                PostMethod post = new PostMethod(targetUrl.toString());
-                post.setDoAuthentication(true);
-                
+
+                HttpPost post = new HttpPost(targetUrl.toString());
+                List<NameValuePair> payload = new ArrayList<NameValuePair>();
+
                 for (Iterator<String> i = dataBlock.stateMap.keySet().iterator(); i.hasNext(); ) {
-                    
+
                     String name = i.next();
                     String value = dataBlock.stateMap.get(name);
 
-                    post.addParameter(name, value);
+                    payload.add(new BasicNameValuePair(name, value));
                 }
-                
+
                 try {
 
-                    int rc = httpClient.executeMethod(post);
+                    HttpResponse rsp = httpClient.execute(post);
+                    StatusLine statusLine = rsp.getStatusLine();
+                    int rc = statusLine.getStatusCode(); 
 
                     if (rc != 200) {
 
                         logger.error("HTTP rc=" + rc + ", text follows:");
-                        logger.error(post.getResponseBodyAsString());
+                        logger.error(EntityUtils.toString(rsp.getEntity()));
                         
                         throw new IOException("Request failed with HTTP code " + rc);
                     }
-                    
+
                 } finally {
                     post.releaseConnection();
                 }

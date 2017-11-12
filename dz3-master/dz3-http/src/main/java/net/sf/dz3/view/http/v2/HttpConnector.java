@@ -3,6 +3,7 @@ package net.sf.dz3.view.http.v2;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,12 @@ import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.NDC;
 
 import com.google.gson.Gson;
@@ -41,7 +47,7 @@ import net.sf.jukebox.jmx.JmxDescriptor;
  * too much request data transfer and processing overhead, this connector caches data from all sources
  * and then submits them in bigger packets more rarely. 
  * 
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2011
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2017
  */
 public class HttpConnector extends Connector<JsonRenderer>{
 
@@ -183,25 +189,27 @@ public class HttpConnector extends Connector<JsonRenderer>{
                 logger.debug("JSON: " + encoded);
 
                 URL targetUrl = serverContextRoot;
-                PostMethod post = new PostMethod(targetUrl.toString());
-                
-                post.setDoAuthentication(true);
-                post.addParameter("snapshot", encoded);
-                
+                HttpPost post = new HttpPost(targetUrl.toString());
+                List<NameValuePair> payload = new ArrayList<NameValuePair>();
+
+                payload.add(new BasicNameValuePair("snapshot", encoded));
+
                 try {
 
-                    int rc = httpClient.executeMethod(post);
+                    HttpResponse rsp = httpClient.execute(post);
+                    StatusLine statusLine = rsp.getStatusLine();
+                    int rc = statusLine.getStatusCode(); 
 
                     if (rc != 200) {
 
                         logger.error("HTTP rc=" + rc + ", text follows:");
-                        logger.error(post.getResponseBodyAsString());
-                        
+                        logger.error(EntityUtils.toString(rsp.getEntity()));
+
                         throw new IOException("Request failed with HTTP code " + rc);
                     }
-                    
-                    processResponse(post.getResponseBodyAsString());
-                    
+
+                    processResponse(EntityUtils.toString(rsp.getEntity()));
+
                 } finally {
                     post.releaseConnection();
                 }
